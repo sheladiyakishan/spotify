@@ -1,10 +1,6 @@
-
 let songs;
 let currfolder;
 let currentsong = new Audio();
-
-
-
 
 function secondsToMinutesSeconds(seconds) {
     if (isNaN(seconds) || seconds < 0) {
@@ -20,12 +16,10 @@ function secondsToMinutesSeconds(seconds) {
     return `${formattedMinutes}:${formattedSeconds}`;
 }
 
-
-
 async function getsongs(folder) {
     currfolder = folder;
     try {
-        let a = await fetch(`/${folder}/`);
+        let a = await fetch(`https://sheladiyakishan.github.io/${folder}/`);
         if (!a.ok) {
             throw new Error(`Failed to fetch ${folder}: ${a.statusText}`);
         }
@@ -35,8 +29,8 @@ async function getsongs(folder) {
         console.log(div);
 
         let as = div.getElementsByTagName("a");
-        songs = []
-        
+        songs = [];
+
         for (let index = 0; index < as.length; index++) {
             const element = as[index];
             if (element.href.endsWith(".mp3")) {
@@ -66,30 +60,25 @@ async function getsongs(folder) {
                 play.src = "img/play.svg";
             });
         });
-        
+
         return songs;
     } catch (error) {
         console.error(error);
     }
 }
 
-
 const playmusic = (track) => {
-
-    currentsong.src = `/${currfolder}/` + track
+    currentsong.src = `https://sheladiyakishan.github.io/${currfolder}/` + track;
     currentsong.play();
-
     console.log(track);
-    
 
     document.querySelector(".songinfo").innerHTML = decodeURI(track);
-    document.querySelector(".songtime").innerHTML = "00:00/00:00"
+    document.querySelector(".songtime").innerHTML = "00:00/00:00";
 }
-
 
 async function displayalbum() {
     try {
-        let a = await fetch(`/songs/`);
+        let a = await fetch(`https://sheladiyakishan.github.io/songs/`);
         if (!a.ok) {
             throw new Error(`Failed to fetch /songs/: ${a.statusText}`);
         }
@@ -106,7 +95,7 @@ async function displayalbum() {
 
             if (e.href.includes("/songs/") && !e.href.includes(".htaccess")) {
                 let folder = e.href.split("/").slice(-1)[0];
-                let a = await fetch(`/songs/${folder}/info.json`);
+                let a = await fetch(`https://sheladiyakishan.github.io/songs/${folder}/info.json`);
 
                 if (!a.ok) {
                     throw new Error(`Failed to fetch /songs/${folder}/info.json: ${a.statusText}`);
@@ -123,16 +112,28 @@ async function displayalbum() {
                             </g>
                         </svg>
                     </div>
-                    <img src="/songs/${folder}/cover.jpeg" alt="">
+                    <img src="https://sheladiyakishan.github.io/songs/${folder}/cover.jpeg" alt="">
                     <p class="p1">${response.title}</p>
                     <p class="p2">${response.description}</p>
                 </div>`;
             }
         }
+
+        // Add card click event listener after cards are created
+        Array.from(document.getElementsByClassName("card")).forEach(e => {
+            e.addEventListener("click", async item => {
+                songs = await getsongs(`songs/${item.currentTarget.dataset.folder}`);
+                console.log(songs);
+                playmusic(songs[0]);
+                play.src = "img/play.svg";
+            });
+        });
+
     } catch (error) {
         console.error(error);
     }
 }
+
 async function main() {
     // Get the list of all the songs 
     await getsongs("songs/ncs");
@@ -204,16 +205,6 @@ async function main() {
         }
     });
 
-    // Add card click event listener
-    Array.from(document.getElementsByClassName("card")).forEach(e => {
-        e.addEventListener("click", async item => {
-            songs = await getsongs(`songs/${item.currentTarget.dataset.folder}`);
-            console.log(songs);
-            playmusic(songs[0]);
-            play.src = "img/play.svg";
-        });
-    });
-
     // Add volume icon click event listener
     document.querySelector(".volume>img").addEventListener("click", e => {
         if (e.target.src.includes("img/volume.svg")) {
@@ -229,17 +220,3 @@ async function main() {
 }
 
 main();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
