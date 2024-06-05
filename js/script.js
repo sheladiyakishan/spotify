@@ -1,4 +1,23 @@
+let songs;
+let currfolder;
+const currentsong = new Audio();  // Ensure currentsong is properly defined
+console("updated code");
+
 const baseURL = "https://sheladiyakishan.github.io/spotify/";
+
+function secondsToMinutesSeconds(seconds) {
+    if (isNaN(seconds) || seconds < 0) {
+        return "00:00";
+    }
+
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = Math.floor(seconds % 60);
+
+    const formattedMinutes = String(minutes).padStart(2, '0');
+    const formattedSeconds = String(remainingSeconds).padStart(2, '0');
+
+    return `${formattedMinutes}:${formattedSeconds}`;
+}
 
 async function getsongs(folder) {
     currfolder = folder;
@@ -10,7 +29,6 @@ async function getsongs(folder) {
         let response = await a.text();
         let div = document.createElement("div");
         div.innerHTML = response;
-        console.log(div);
 
         let as = div.getElementsByTagName("a");
         songs = [];
@@ -22,7 +40,7 @@ async function getsongs(folder) {
             }
         }
 
-        let songul = document.querySelector(".songlist").getElementsByTagName("ul")[0];
+        let songul = document.querySelector(".songlist ul");
         songul.innerHTML = "";
         for (const song of songs) {
             songul.innerHTML += `<li>
@@ -182,23 +200,23 @@ async function main() {
     });
 
     // Add volume change event listener
-    document.querySelector(".range").getElementsByTagName("input")[0].addEventListener("change", (e) => {
+    document.querySelector(".range input").addEventListener("change", (e) => {
         currentsong.volume = parseInt(e.target.value) / 100;
         if (currentsong.volume > 0) {
-            document.querySelector(".volume>img").src = document.querySelector(".volume>img").src.replace("mute.svg", "volume.svg");
+            document.querySelector(".volume img").src = document.querySelector(".volume img").src.replace("mute.svg", "volume.svg");
         }
     });
 
     // Add volume icon click event listener
-    document.querySelector(".volume>img").addEventListener("click", e => {
+    document.querySelector(".volume img").addEventListener("click", e => {
         if (e.target.src.includes(`${baseURL}img/volume.svg`)) {
             e.target.src = e.target.src.replace(`${baseURL}img/volume.svg`, `${baseURL}img/mute.svg`);
             currentsong.volume = 0;
-            document.querySelector(".range").getElementsByTagName("input")[0].value = 0;
+            document.querySelector(".range input").value = 0;
         } else {
             e.target.src = `${baseURL}img/volume.svg`;
             currentsong.volume = 0.10;
-            document.querySelector(".range").getElementsByTagName("input")[0].value = 70;
+            document.querySelector(".range input").value = 70;
         }
     });
 }
