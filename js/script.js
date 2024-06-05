@@ -1,7 +1,7 @@
 let songs;
 let currfolder;
 const currentsong = new Audio();  // Ensure currentsong is properly defined
-console("updated code");
+
 
 const baseURL = "https://sheladiyakishan.github.io/spotify/";
 
